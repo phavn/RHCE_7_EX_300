@@ -11,8 +11,10 @@
 	 	# nmcli con show <iface>
 	 - Show nmcli man examples
 	 	# man nmcli-examples
-	- Description of settings and properties of NetworkManager connection profiles
+	 - Description of settings and properties of NetworkManager connection profiles
 		# man nm-settings
+	 - Internet connectivity check
+	 	# nm-online
 
 	 - Create new connection with static address
 	 	# nmcli con add con-name "newcon" ifname eth0 autoconnect no type ethernet ip4 10.0.0.0/24 gw4 10.0.0.1
@@ -52,18 +54,41 @@
 
 	### Network Teaming ####
 
+	- High level steps
+		- Note the local device names.
+		- Set local interfaces to not start automatically.
+		- Set IP configuration to be disabled on local interfaces and enable it on the team connection.
+		- Create the team device, specify a name.
+		- Add device types based on their names.
+
+
+
 	- Create network team interface and add slaves		
 
 	   - Disable network interfaces from starting up on boot
 	   # nmcli con mod eth0 connection.autoconnect no
 	   # nmcli con mod eth1 connection.authconnect no 
 
-	   - Disable ipv4 configuration of network interfaces. Edit config files or use nmcli
-	   #
+	   - Disable ipv4 configuration of network interfaces. Edit config files to look like below:
+
+		# cat ifcfg-eth0
+			UUID=f7171e95-22cd-4d63-90a5-ce3427da0fa2
+			IPV6_AUTOCONF=yes
+			BOOTPROTO=none
+			DEVICE=eth0
+			ONBOOT=no
+			TYPE=Ethernet
+			PROXY_METHOD=none
+			BROWSER_ONLY=no
+			NAME=eth0
+
 
        # nmcli con add type team con-name team1 ifname team1
+       # nmcli con mod team1 ipv4.addresses 192.168.100.100/24 ipv4.gateway 192.168.100.1 ipv4.dns 192.168.100.1
        # nmcli con add type ethernet con-name team1-slave1 ifname eth0 master team1
        # nmcli con add type ethernet con-name team1-slave2 ifname eth1 master team1
+       # nmcli con mod team1-slave1 connection.autoconnect yes
+       # nmcli con mod team1-slave2 connection.autoconnect yes
        # nmcli con up team1-slave1
        # nmcli con up team1-slave2
 
@@ -84,4 +109,23 @@
 			}
 
 		# nmcli con mod team1 config team1_config.json
+
+
+		- View teaming interface state
+			# teamdctl team1 state
+
+		- View teaming ports
+			# teamnl team1 ports
+		- View teaming options
+			# teamnl team1 options
+		- Monitor changes made to options, port and interface information
+			# teamnl team1 monitor
+
+		# Troubleshooting concepts to keep in mind:
+
+			- The team interface is started when one of its port interfaces is started, but this does not start all other port interfaces as well.
+			- Starting a team interface does not automatically start all port interfaces.
+			- Stopping a team interface does stop all involved port interfaces.
+			- Static IP connections can be started on a team interface that does not have any ports currently active.
+			- DHCP connections can only be started when ports are available.
 
