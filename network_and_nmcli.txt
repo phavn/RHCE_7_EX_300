@@ -1,0 +1,87 @@
+##### Network/nmcli #####
+
+	### NMCLI ###
+     - Note: changes made by nmcli command are persistent
+
+	 - Show brief overview of all interfaces
+	 	# nmcli dev status
+	 - Show overview of connections/interfaces
+	 	# nmcli con show
+	 - Show network interface details
+	 	# nmcli con show <iface>
+	 - Show nmcli man examples
+	 	# man nmcli-examples
+	- Description of settings and properties of NetworkManager connection profiles
+		# man nm-settings
+
+	 - Create new connection with static address
+	 	# nmcli con add con-name "newcon" ifname eth0 autoconnect no type ethernet ip4 10.0.0.0/24 gw4 10.0.0.1
+	 - Create a new connection with dhcp. dhcp is set by default when static ip address is not set
+	 	# # nmcli con add con-name "newcon" ifname eth0 autoconnect no type ethernet
+	 - Enable/disable connection
+	 	# nmcli con down <name>
+	 	# nmcli con up <name>
+	 - Remove connection
+	 	# nmcli con delete <con name>
+	 - Modify connection - add DNS server. Note: /etc/resolv.conf get re-readpopulated when NetworkManager gets restarted
+	 	# nmcli con mod <con name> +ipv4.dns "8.8.8.8"
+	 - Edit connection or type "print" to display all connection properties
+	 	# nmcli con edit <con name> 
+	 		nmcli> set connection.autoconnect yes
+	 		nmcli> save
+	 - Enable connection on boot (ONBOOT=yes). Use nmcli con show <connection name> to display all properties
+	 	# nmcli con mod <con name> connection.autoconnect=yes
+	 - Reload configuration
+	 	# nmcli con reload
+
+	### IP command ###
+	 - Note: changes made by ip command are not persistent
+		- See the status:
+			# ip addr show
+			# ip route show
+			# ip link show
+		- Show network interface(s) status
+			# ip -s link
+		- Bring network device up/down
+			# ip link set dev <ifname> [up|down]
+		- Add ip address to interface
+			# ip addr add 10.0.0.5/25 dev <ifname>
+		- Show listening TCP port
+			# ss -lt
+
+
+	### Network Teaming ####
+
+	- Create network team interface and add slaves		
+
+	   - Disable network interfaces from starting up on boot
+	   # nmcli con mod eth0 connection.autoconnect no
+	   # nmcli con mod eth1 connection.authconnect no 
+
+	   - Disable ipv4 configuration of network interfaces. Edit config files or use nmcli
+	   #
+
+       # nmcli con add type team con-name team1 ifname team1
+       # nmcli con add type ethernet con-name team1-slave1 ifname eth0 master team1
+       # nmcli con add type ethernet con-name team1-slave2 ifname eth1 master team1
+       # nmcli con up team1-slave1
+       # nmcli con up team1-slave2
+
+       Note: default runner (roundrobin, activebackup, loadbalance etc.) method gets set to roundrobin if not specified. json config file has to get passed to nmcli to change that. The syntax is a bit complex so use the below steps instead
+
+       - To change runner method:
+
+       # teamdctl team1 config dump
+
+       - Grab runner snippet, modify it and place it into a json config file i.e.
+
+       	# cat team1_config.json 
+
+			{
+			    "runner": {
+			        "name": "activebackup"
+			    }
+			}
+
+		# nmcli con mod team1 config team1_config.json
+
