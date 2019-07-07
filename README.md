@@ -1,1 +1,1 @@
-# RHCE_7_EX_300
+RHCE 7 EX300 exam personal notes
