@@ -19,3 +19,7 @@
 
    	- Remove rich rule
    		# firewall-cmd --permanent --zone=public --remove-rich-rule='<rule>'
+
+### NAT ###
+
+TODO: Populate this section

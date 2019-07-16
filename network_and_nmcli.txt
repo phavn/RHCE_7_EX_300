@@ -129,3 +129,11 @@
 			- Static IP connections can be started on a team interface that does not have any ports currently active.
 			- DHCP connections can only be started when ports are available.
 
+
+	### Routes ###
+
+	TODO: Populate this section
+
+	### IPv6 ###
+
+	TODO: Populate this section
