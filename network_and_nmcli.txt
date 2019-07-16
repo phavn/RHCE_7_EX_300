@@ -133,6 +133,11 @@
 	### Routes ###
 
 	TODO: Populate this section
+		# Static routes. There are multiple ways of adding static routes. It could be done via nmcli, /etc/sysconfig/static-route file and via /etc/sysconfig/network-scripts/route-<interface> file. On exam, use the latter method.
+
+			- Edit /etc/sysconfig/network-scripts/route-<interface>
+			- Add a route using "<destination ip address> via <next hop ip address>" syntax
+				- If you forget the static route syntax, add route using ip route command then copy and paste route to static file
 
 	### IPv6 ###
 
