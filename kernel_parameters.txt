@@ -1,0 +1,13 @@
+##### Kernel parameters/tuning #####
+
+	- List all kernel parameters
+		# sysctl -a
+
+	- Change kernel parameter temporarily
+		# sysctl -w kernel.sysrq=32
+
+	- Change kernel parameter persistently. Create a custom file in this directory:
+		- /etc/sysctl.d
+
+	- Tunable kernel parameter files are located in:
+		- /proc/sys
