@@ -1,4 +1,4 @@
-##### Firewalld/Firewall-cmd #####
+##### Firewalld #####
 
    https://www.rootusers.com/how-to-use-firewalld-rich-rules-and-zones-for-filtering-and-nat/
 
@@ -14,12 +14,22 @@
    	- Block ip address. Note: firewalld uses "rich language" for complex rules. man firewalld.richlanguage for man pages
    		# firewall-cmd --permanent --zone=public --add-rich-rule='rule family="ipv4" source address="10.10.10.0/24" drop'
 
+      - Enable logging to messages log using rich rule. Limit access to apache from 10.0.0.0/24 to 100 conenctions per second
+         # firewall-cmd --permanent --add-rich-rule="rule family="ipv4" source address="10.0.0.0/24" service name="http" level="info" log prefix="firewall http rule" limit value="100/s" accept"
+
    	- List rich rules
    		# firewall-cmd --permanent --zone=public --list-rich-rules
 
    	- Remove rich rule
    		# firewall-cmd --permanent --zone=public --remove-rich-rule='<rule>'
 
-### NAT ###
+      - Service files locations:
+         - Standard: /usr/lib/firewalld/services
+         - Custom: /etc/firewalld/services
 
-TODO: Populate this section
+### Network Address Translation(NAT) ###
+
+# TODO: populate this section further (masquerading etc.)
+
+   - Port forwarding - forward tcp traffic from port 443 to 22 from 10.10.10.10
+      # firewall-cmd --permanent --add-rich-rule="rule family="ipv4" source address=10.10.10.10 forward-port port=443 protocol=tcp to-port=22"
