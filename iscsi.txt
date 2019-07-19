@@ -2,5 +2,7 @@
 
 ### Target configuration ###
 
+	# yum install targetd targetcli
+
 
 ### Initiator configuration ###
