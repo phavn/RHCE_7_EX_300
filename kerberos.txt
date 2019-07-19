@@ -1,5 +1,83 @@
-### ###
+##### Kerberos #####
 
-	- Great Kerberos fundamentals video
+	- Great Kerberos fundamentals videos
+		https://www.youtube.com/watch?v=2WqZSZ5t0qk
 
-	https://www.youtube.com/watch?v=2WqZSZ5t0qk
+		https://www.youtube.com/watch?v=zO3AvH3DyxU
+		https://www.youtube.com/watch?v=tl_Kl_yyHpE
+
+	- Good read about fundamentals
+		https://www.roguelynn.com/words/explain-like-im-5-kerberos/
+
+
+
+### KDC (Kerberos Key Distribution Center) server set up ###
+
+Reference:
+	realm - NIXATION.COM
+	Server hostname - server2.nixation.com
+	Client hostname - outsider2.nixation.com
+
+	# yum install krb5-server krb5-workstation pam_krb5
+	# vi /var/kerberos/krb5kdc/kdc.conf
+		- Replace [realms] realmd domain with your own. It should always be in uppercase letters. It should be set to EXAMPLE.com by default
+	# vi /var/kerberos/krb5kdc/kadm5.acl
+		- Replace EXAMPLE.COM with your own realm.
+	# vi /etc/krb5.conf
+		- Replace EXAMPLE.com and example.com with your own realm.
+		- Uncomment all configuration lines
+
+	- Create kerberos database. It will prompt to set krb5 database password.
+	# kdb5_util create -s -r NIXATION.COM
+
+	- Enable and start krb5 services
+		# systemctl enable krb5kdc kadmin
+		# systemctl start {krb5kdc, kadmin}
+
+	- Launch krb5 admin console
+	# kadmin.local
+
+	- Create administrator principal. It will prompt to set its password
+		# addprinc root/admin
+
+	- Add user principal. It will prompt to set its password
+		# addprinc krbtest
+
+	- Add hostname of kerberos server to krb5 database
+		# add princ -randkey host/server2.nixation.com
+
+	- Generate keytab file
+		# ktadd host/server2.nixation.com
+	- Verify keytab file
+		# strings /etc/krb5.keytab
+
+	- Edit ssh client
+		# vi /etc/ssh/ssh_client
+			- Uncomment and set to yes directives below:
+				GSSAPIAuthentication yes
+				GSSAPIDelegateCredentials yes
+		# systemctl reload sshd
+
+	- Enable krb5 authentication
+		# authconfig --enablekrb5 --update
+
+	- Open ports
+		# cp /usr/lib/firewalld/services/kerberos.xml /etc/firewalld/services
+		# vi /etc/firewalld/services/kerberos.xml
+			- Add "<port protocol="tcp" port="749"/>"
+				- If this fails, add all kerberos tcp and udp ports. Get them by # egrep 'krb|kerb' /etc/services
+		# firewall-cmd --permanent --add-service=kerberos
+		# firewall-cmd --reload
+
+
+	- Test kerberos auth locally
+		# useradd krbtest
+		# su - krbtest
+		# kinit	- Add kerberos password set earlier
+		# klist
+
+
+### Kerberos client OS config ###
+
+	# yum install krb5-workstation pam_krb5
+

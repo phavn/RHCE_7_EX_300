@@ -6,8 +6,26 @@
 	- Change kernel parameter temporarily
 		# sysctl -w kernel.sysrq=32
 
-	- Change kernel parameter persistently. Create a custom file in this directory:
+	- Change kernel parameter persistently. Create a custom file that ends with .conf in this directory:
 		- /etc/sysctl.d
+
+	- Apply new parameters
+		# sysctl -p
+
+	- Default kernel parameters configuration file. It should not be used/edited any longer
+		- /etc/sysctl.conf
 
 	- Tunable kernel parameter files are located in:
 		- /proc/sys
+
+	- Most useful (as per RHCE 7 cert guide book) tunables
+
+		net.ipv4.ip_forward						Set to 1 to enable packet forwarding
+		net.ipv4.icmp_echo_ignore_all			Set to 1 to disable all ping
+		net.ipv4.icmp_echo_ignore_broadcasts	Set to 1 to disable broadcast ping
+		vm.swappiness							Use 0 to 100 to increase swap usage
+		kernel.hostname							Set the server hostname
+
+
+
+

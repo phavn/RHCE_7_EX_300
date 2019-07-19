@@ -10,6 +10,15 @@
    		# firewall-cmd --get-active-zones
    	- Get zone details
    		# firewall-cmd --info-zone <zone name>
+      - Service files locations
+         - Standard: /usr/lib/firewalld/services
+         - Custom: /etc/firewalld/services
+      - List all services
+         # firewall-cmd --get-services
+      - List all default's zone allowed services
+         # firewall-cmd --list-services
+      - List all ports associated with a service
+         # firewall-cmd --permanent --service=kerberos --get-ports
 
    	- Block ip address. Note: firewalld uses "rich language" for complex rules. man firewalld.richlanguage for man pages
    		# firewall-cmd --permanent --zone=public --add-rich-rule='rule family="ipv4" source address="10.10.10.0/24" drop'
@@ -22,10 +31,6 @@
 
    	- Remove rich rule
    		# firewall-cmd --permanent --zone=public --remove-rich-rule='<rule>'
-
-      - Service files locations:
-         - Standard: /usr/lib/firewalld/services
-         - Custom: /etc/firewalld/services
 
 ### Network Address Translation(NAT) ###
 
