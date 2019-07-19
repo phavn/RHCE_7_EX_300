@@ -18,7 +18,10 @@ Reference:
 	Server hostname - server2.nixation.com
 	Client hostname - outsider2.nixation.com
 
+	- Install
 	# yum install krb5-server krb5-workstation pam_krb5
+
+	- Edit configs
 	# vi /var/kerberos/krb5kdc/kdc.conf
 		- Replace [realms] realmd domain with your own. It should always be in uppercase letters. It should be set to EXAMPLE.com by default
 	# vi /var/kerberos/krb5kdc/kadm5.acl
@@ -26,6 +29,7 @@ Reference:
 	# vi /etc/krb5.conf
 		- Replace EXAMPLE.com and example.com with your own realm.
 		- Uncomment all configuration lines
+		- Make sure kdc and admin_server point to kerberos server (server2.nixation.com) in our case
 
 	- Create kerberos database. It will prompt to set krb5 database password.
 	# kdb5_util create -s -r NIXATION.COM
@@ -73,11 +77,53 @@ Reference:
 	- Test kerberos auth locally
 		# useradd krbtest
 		# su - krbtest
-		# kinit	- Add kerberos password set earlier
-		# klist
+		$ kinit							- Initialize. It will prompt for krbtest account kerberos password
+		$ klist							- Verify that TGT was issued
+		$ ssh server2.nixation.com 		- Test ssh authentication to kerberos server (itself)
+
+
 
 
 ### Kerberos client OS config ###
 
 	# yum install krb5-workstation pam_krb5
+
+	- Edit krb5.conf
+		# vi /etc/krb5.conf
+			- Replace EXAMPLE.com and example.com with your own realm.
+			- Uncomment all configuration lines
+			- Make sure kdc and admin_server point to kerberos server (server2.nixation.com) in our case
+
+			- Edit ssh client
+
+		- Join kerberos domain
+			# kadmin	- Enter kerberos server admin password
+		- Add client host to kerberos db
+			# addprinc host/outsider2.nixation.com
+		- Generate keytab file
+			# ktadd host/outsider2.nixation.com
+			- Verify keytab file
+				# strings /etc/krb5.keytab
+
+		# vi /etc/ssh/ssh_client
+			- Uncomment and set to yes directives below:
+				GSSAPIAuthentication yes
+				GSSAPIDelegateCredentials yes
+		# systemctl reload sshd
+
+		- Enable krb5 authentication
+		# authconfig --enablekrb5 --update		
+
+
+		- Test
+			# useradd krbtest
+			# su - krbtest
+			$ kinit 					- Initialize. It will prompt for krbtest account kerberos password
+			$ klist						- Verify that TGT was issued
+			$ ssh server2.nixation.com 	- Test ssh authentication to kerberos server
+
+
+
+
+
 
