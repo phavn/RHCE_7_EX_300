@@ -1,8 +1,145 @@
 ##### iSCSI #####
 
+
+### Fundamentals ###
+
+
+# iSCSI Terminology #
+ 
+Terminology 			Description
+
+IQN 					The iSCSI qualified name. A unique name that is used for identifying targets as well as initiators. 
+Backend storage			The storage devices on the iSCSI target that the iSCSI target component is providing access to. 
+Target 					The service on an iSCSI server that gives access to backend storage devices. 
+Initiator 				The iSCSI client that connects to a target and is identified by an IQN. 
+ACL 					The access control list that is based on the iSCSI initiator IQNs and used to provide access to a specific target. While setting up the iSCSI target on RHEL 7, 						 creating an ACL is mandatory. This ACL is based on the IQN of the iSCSI initiator that should be granted access. 
+LUN 					A logical unit number. The backend storage devices that are shared through the target. This can be any device that supports read/write operations, such as disks, 						   partitions, logical volumes, files, or tape drives. 
+Portal 					The IP address and port that a target or initiator uses to establish connections. Also referred to as node. 
+TPG 					The target portal group. This is the collection of IP address and TCP ports to which a specific iSCSI target will listen. 
+Discovery				The process whereby an initiator finds the targets that are configured on a portal and stores this information locally for future reference. Discovery is done by 						   using the  iscsiadm  command. 
+Login 					Authentication that gives an initiator access to LUNs on the target. After successful login, the login information is stored on the initiator automatically. Login 						    is performed using the  iscsiadm  command. 
+
+
+
 ### Target configuration ###
 
-	# yum install targetd targetcli
+	# High level procedure
+		1. Create the backing storage devices. 
+		2. Create the IQN and default target portal group (TGP). 
+		3. Configure one or more ACLs for the TPG. 
+		4. Create LUNs to provide access to the backing storage devices. 
+		5. Create a portal to provide a network interface that iSCSI initiators can connect to. 
+		6. Verify and commit the configuration
+
+
+
+	# Detailed instructions
+
+	Install targetcli package
+		# yum install targetcli
+		# targetcli
+
+	Note: the targetcli is structured in same sequence as high level steps. Use ls to view them.
+	Step 1.
+		# cd /backstores
+		# block/ create name=block1 dev=/dev/mapper/san_vg-san1_lv 				- Assign LV to block1 backstore. Use TAB for help.
+		# block/ create name=block2 dev=/dev/mapper/san_vg-san2_lv 				- Assign LV to block2 backstore. Use TAB for help.
+		# fileio/ create name=file1 file_or_dev=/sandata/sanfile1 size=100M		- Create and assign sanfile1 to file1 backstore.
+		# ls 																	- Overview current configuration
+
+	Step 2.
+		# cd /iscsi
+		# create iqn.2019-07.com.nixation:target1 								- Create IQN. It has to be in YYYY-MM format. This automatically creates TGP
+
+	Step 3.
+		# cd iqn.2019-07.com.nixation:target1 									- cd to IQN
+		# tpg1/acls create iqn.2019-07.com.nixation:server2 					- Create ACL for target server itself
+		# tpg1/acls create iqn.2019-07.com.nixation:outsider2 					- Create ACL for initiator client
+
+	Step 4.
+		# cd /iscsi/iqn.2019-07.com.nixation:target1/ 							- Make sure to be in target1's IQN
+		# tpg1/luns create /backstores/block/block1 							- Create LUN and associate it with block1 backstore. lun=<number> option can be used to specify lun #
+		# tpg1/luns create /backstores/block/block2 							- Create LUN and associate it with block2 backstore. lun=<number> option can be used to specify lun #
+		# tpg1/luns create /backstores/fileio/file1 							- Create LUN and associate it with file1 backstore. lun=<number> option can be used to specify lun #
+
+	Step 5. Note: This step is required only if you need to bind target to specific ip address/interface. By default it accepts connections on all interfaces 0.0.0.0:3260
+		# cd iscsi/iqn.2019-07.com.nixation:target1/
+		# tpg1/portals/ delete ip_address=0.0.0.0 ip_port=3260 					- Default portal has to be removed first
+		# tpg1/portals/ create ip_address=192.168.100.10 ip_port=3260 			- Create new portal. Port # can be specified
+
+	Step 6.
+		# cd /
+		# ls
+		# exit 																	- Configuration gets automatically saved to /etc/target/saveconfig.json
+
+	Authentication. It's optional and has to be set on specific ACL.
+		# cd iscsi/iqn.2019-07.com.nixation:target1/
+		# tpg1/acls/iqn.2019-07.com.nixation:outsider2/ set auth userid=iscsi_user password=passw0rd
+
+
+	Firewall stuff:
+		# firewall-cmd --permanent --add-service=iscsi-target
+		# firewall-cmd --reload
+
+
+	Start target service
+		# systemctl enable target
+		# systemctl start target
+
+
 
 
 ### Initiator configuration ###
+
+	# High level procedure
+
+		1. Set the iSCSI initiatorname
+		2. Use iscsiadm to discover available targets
+		3. Use iscsiadm to log in to the target
+
+	# Detailed instructions. Note: all this info is listed in "man iscsiadm" pages
+q
+	Install iscsi-initiator-utils package
+		# yum install iscsi-initiator-utils
+
+	Step 1. 
+		# vi /etc/iscsi/initiatorname.iscsi
+			- Change initiator name as per target configuration. In our case it's iqn.2019-07.com.nixation:outsider2
+		# systemctl enable iscsid
+		# systemctl restart iscsid
+
+	Step 2.
+
+			When using iSCSI discovery, you need three different arguments: 
+
+			--type sendtargets 
+			This tells the discovery mode how to find the iSCSI targets. In some configurations, an iSNS service can be configured to make discovery easier, but setting up iSNS is not an RHCE requirement. Therefore, you’ll find the targets you need using --type sendtargets. 
+
+			--portal  
+		 	This argument tells the  iscsiadm  command which IP address and port to address to perform the discovery. You can use an IP address or node name as the argument, and optionally, you can specify a port as well. If no port is specified, the default port 3260 is used. 
+
+			--discover 
+	   		This argument tells the iscsid service to perform a discovery. 
+
+
+		# iscsiadm --mode discovery --type sendtargets --portal 192.168.100.10 --discover 		- Use iscsiadm in discovery or discoverydb mode
+		# iscsiadm --mode discovery -P 1														- Get more info after successful discovery was done
+
+	Step 3. Note: iscsiadm logs in persistently and will survive after reboot.
+
+		# iscsiadm --mode node --targetname iqn.2019-07.com.nixation:target1 --portal 192.168.100.10:3260 --login
+		# iscsiadm --mode session -P 3 			- Verify
+		# lsscsi 								- Verify
+
+
+	- Logout and remove local iscsi data
+
+		- iscsi data is stored in /var/lib/iscsi
+
+		# iscsiadm --mode node --targetname iqn.2019-07.com.nixation:target1 --logout
+		# iscsiadm --mode node --targetname iqn.2019-07.com.nixation:target1 --op=delete
+
+
+	### Mounting ###
+
+	- Make sure to add _netdev to /etc/fstab iscsi entries
