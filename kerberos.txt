@@ -48,7 +48,7 @@ Reference:
 		# addprinc krbtest
 
 	- Add hostname of kerberos server to krb5 database
-		# add princ -randkey host/server2.nixation.com
+		# addprinc -randkey host/server2.nixation.com
 
 	- Generate keytab file
 		# ktadd host/server2.nixation.com

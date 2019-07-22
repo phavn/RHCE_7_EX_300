@@ -1,6 +1,9 @@
 ##### System performance #####
 
+	- System performance related files are in /proc
 
-	- System performance related files in /proc
+	- Dstat is a versatile replacement for vmstat, iostat and ifstat. Dstat overcomes some of the limitations and adds some extra features.
 
-	
+	- Install sysstat package for historical system usage
+	- sadf - The  sadf command is used for displaying the contents of data files created by the sar(1) command. But unlike sar, sadf can write its data in many different formats (CSV, XML, etc.)
+
