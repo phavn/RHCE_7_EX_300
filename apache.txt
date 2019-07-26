@@ -1,0 +1,76 @@
+##### Apache #####
+
+
+### Install httpd manual. Provides quite a bit of apache documentation.
+	# yum install httpd-manual
+	# elinks <hostname>/manual
+
+### Create new virtual host
+
+	When working with virtual hosts, there are a few things to be aware of:
+
+		- If your Apache server is configured for virtual hosts, all servers it is hosting should be handled by virtual hosts. To create a catch all entry for all HTTP requests that are directed to this host but that do not have a specific virtual host file, you can create a virtual host for _default_:80. 
+
+		- Name-based virtual hosting is the most common solution. In this solution, virtual hosts are using different names but the same IP address.
+
+		- IP-based virtual hosts are less common, but are required if the name of a web server must be resolved to a unique IP address. IP-based virtual hosts do require several IP addresses on the same machine and are common in configuration where the Apache server uses TLS to secure connections.
+
+
+	- Step by step:
+
+		1. Create local directory structure with default index.html pages
+		2. Add selinux fcontext for new directory structure
+		3. Set up firewall - # firewall-cmd --permanent --add-service=http; firewall-cmd --reload
+		4. Edit /etc/hosts file
+		5. Add <Directory <path>> to /etc/httpd/conf/httpd.conf Note: Copy default /var/www/html one
+
+			<Directory "/var/www">
+			    AllowOverride None
+			    Require all granted
+			</Directory>
+
+		6. Create and edit virtual hosts file in /etc/conf.d/<filename>.conf
+
+			<VirtualHost *:80>
+		        ServerAdmin root@nixation.com
+		        Servername www.nixation.com
+		        ServerAlias nixation.com
+		        DocumentRoot /web/main
+		        CustomLog logs/nixation_access_log common
+		        ErrorLog logs/nixation_error_log
+			</VirtualHost>
+
+			<VirtualHost *:80>
+		        ServerName app1.nixation.com
+		        DocumentRoot /web/app1
+		        CustomLog logs/app1_nixation_access_log common
+		        ErrorLog logs/app1_nixation_error_log
+			</VirtualHost>
+
+
+### Restrict user access via .htaccess basic auth
+
+
+### Deploy cgi (Common Gateway Interface) app
+
+	Common Gateway Interface (CGI) is among the oldest methods to serve dynamic content. When a CGI resource is accessed, the Apache server executes that resource as a program and uses the output of that process. The advantage of using CGI is that it is very flexible; it does not define which scripting language is needed to generate the dynamic content. 
+
+	To serve CGI contents, a few requirements exist:
+		- The ScriptAlias ScriptAlias /cgi-bin/ “/var/www/cgi-bin/” must exist. (Of course, it can be changed to refer to any other directory on the file system.)
+		- The ScriptAlias directory (that is, the directory where the scripts are stored) must be provided with the httpd_sys_script_exec_t SELinux context type
+
+
+### Deploy php app
+
+### Deploy python app
+
+### TLS security stuff
+
+	- High level:
+		- A certificate must be obtained
+		- The required TLS modules must be installed
+		- The Apache (virtual) host must be configured to use the certificates
+
+	# yum install crypto-utils mod_ssl
+	# genkey app.nixation.com
+	# 
