@@ -56,7 +56,7 @@ Reference:
 		# strings /etc/krb5.keytab
 
 	- Edit ssh client
-		# vi /etc/ssh/ssh_client
+		# vi /etc/ssh/ssh_config
 			- Uncomment and set to yes directives below:
 				GSSAPIAuthentication yes
 				GSSAPIDelegateCredentials yes
