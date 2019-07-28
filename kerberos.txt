@@ -81,8 +81,10 @@ Reference:
 		$ klist							- Verify that TGT was issued
 		$ ssh server2.nixation.com 		- Test ssh authentication to kerberos server (itself)
 
-
-
+	- List principals
+		# kadmin: list_principals
+		# kadmin: list_principals joe*
+		# kadmin: get_principal root/admin
 
 ### Kerberos client OS config ###
 
