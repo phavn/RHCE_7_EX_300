@@ -62,15 +62,57 @@
 
 ### Deploy php app
 
+	PHP scripts can be included using CGI, but a much better way is to install the mod_php Apache module which 
+	enables an internal PHP interpreter, which is much more efficient. Installing mod_php adds the configuration file /etc/httpd/conf.d/php.conf
+
+
 ### Deploy python app
+
+	As is the case for PHP script, Python scripts can also be executed in two ways. They can be included as a CGI script, or the Web Server Gateway Interface (WSGI) can be used. This interface provides a new directive in the Apache configuration files to refer to the names of specific scripts. To deploy WSGI scripts, use the following
+	approach:
+
+		1. Install the mod_wsgi package.
+	
+		2. Add a WSGIScriptAlias line to a virtual host definition. This directive takes two arguments, the first of which refers to the alias on the Apache server, and the second of which refers directly to the Python script. So, the line could look like the following: WSGIScriptAlias /webapp/ /opt/webapp/app.py
+	
+		3. Ensure that the WSGI application is executable by the Apache user and group
+		and that the SELinux context is set to httpd_sys_content_t.
+
 
 ### TLS security stuff
 
-	- High level:
+	- The TLS connection is established as follows:
+
+		1. The client initiates a connection, using a ClientHello message. This message contains a list of the encryption protocols and ciphers that the client supports.
+
+		2. The server responds with a ServerHello message, indicating the encryption ciphers it supports. The server also sends the server certificate, containing the public key, general server information like the fully qualified domain name (FQDN), and a signature from a CA.
+		
+		3. The client verifies the server certificate by checking whether the supplied information matches the request, and also by verifying all signatures.
+		
+		4. If the certificate is verified, the client creates a session key. This session key is encrypted with the public key of the server and sent back to the server.
+		
+		5. The server decrypts the session key, after which it can be used to encrypt and decrypt all data that is sent between client and server.
+
+
+	### High level configuration
+	
 		- A certificate must be obtained
 		- The required TLS modules must be installed
 		- The Apache (virtual) host must be configured to use the certificates
 
-	# yum install crypto-utils mod_ssl
-	# genkey app.nixation.com
-	# 
+
+	### Configuration in detail
+	
+		# yum install crypto-utils mod_ssl
+
+	    - Generate self-signed certs
+		# genkey --days 365 app1.nixation.com
+			- Keys are placed into /etc/pki/tls/certs and /etc/pki/tls/private
+		# chmod 400 app2.*
+			# rngd -r /dev/urandom 	- Run to speed up key generation or do some random stuff like running "top" command
+	
+		- Add the following to VirtualHost configuration. ssl.conf can be used as example to gather this
+
+	        SSLEngine On
+	        SSLCertificateFile /etc/httpd/certs/app1.crt
+	        SSLCertificateKeyFile /etc/httpd/certs/app1.key
