@@ -4,3 +4,36 @@
 	### Caching nameserver - unbound ###
 
 		# yum install unbound
+		# systemctl enable unbound; systemctl start unbound
+
+		- Edit /etc/unbound/unbound.conf
+			- Change "interface: <ip address>" to bind to specific ip address
+			- Chance ACL: "access-control: <ip range> allow"
+			- Configure forwarder
+				
+				forward-zone:
+					name: "."
+					forward-addr: 8.8.8.8
+
+		# unbound-checkconfig 	- To verify unbound conf file
+		# systemctl restart 
+		# firewall-cmd --permanent --add-service=dns; firewall-cmd --reload
+
+
+	# Troubleshooting
+
+	- Disable DNSSEC for specific domain in /etc/unbound/unbound.conf
+			Add "domain-insecure: <domainname.com>"
+
+	- Dump content of unbound cache
+		# unbound-control dump_cache > unbound_cache.txt
+	- Load unbound cache
+		# unbound-control load_cache < unbound_cache.txt
+	- Purge specific DNS record
+		# unbound-control flush app1.nixation.com
+	- Purge entire zone
+		# unbound-control flush nixation.com
+
+
+
+	
