@@ -1,1 +1,54 @@
 ##### MariaDB #####
+
+	- Install and start
+		# yum install mariadb mariadb-server mariadb-test 
+		# systemctl start mariadb; systemctl enable mariadb
+	- Secure the fresh install
+		# mysql_secure_installation
+	- Firewall stuff
+		# firewall-cmd --permanent --add-service=mysql; firewall-cmd --reload
+
+
+	### Misc ###
+
+	- Disable mariadb networking
+		- add "skip_networking=1" to /etc/my.cnf
+
+	### MySQL stuff ###
+
+		- Show db's
+			MariaDB > show databases;
+		- Select db
+			MariaDB > use <db name>;
+		- Show tables
+			MariaDB > show tables;
+		- Show tables info
+			MariaDB > describe <table name>;
+		- Create db
+			MariaDB > create database <db name>;
+		- Drop db
+			MariaDB > drop database addressbook;
+		- Create table
+			MariaDB > create table people (id first_name varchar(40), last_name varchar(40));
+		- Drop table
+			MariaDB > drop table people;
+		- Insert a record
+			MariaDB > insert into people (100, "Pablo", "Gonzallez");
+		- Show all records that start with P in first_name
+			MariaDB > select * from people where first_name like "P%";
+
+	# Managing users
+
+		- Create user pavel that can log in from localhost only. Replace localhost with % to grant right to log in from anywhere.
+			MariaDB> create user pavel@localhost identified by "password";
+		- Grant pavel all privileges on all addressbook database tables (Other rights: select, update, delete, insert)
+			MariaDB > grant all on addressbook.* to pavel@localhost;
+		- Flush privileges after adding new users
+			MariaDB > flush privileges;
+
+	# Backup and restore
+		- Create a db backup
+			# mysqldump -u root -p addressbook > addressbook.sql 		- mysqldump locks tables while performing the backup
+		- Restore db
+			# mysql -u root -p addressbook < addressbook.sql 			- addressbook db has to exist
+
