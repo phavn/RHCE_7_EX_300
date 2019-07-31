@@ -24,6 +24,9 @@ Reference:
 	- Edit configs
 	# vi /var/kerberos/krb5kdc/kdc.conf
 		- Replace [realms] realmd domain with your own. It should always be in uppercase letters. It should be set to EXAMPLE.com by default
+		- To improve security, enable preauth - This can be found in "man kdc.conf" man pages
+			- Uncomment master_key_type
+			- Add "default_principal_flags = +preauth"
 	# vi /var/kerberos/krb5kdc/kadm5.acl
 		- Replace EXAMPLE.COM with your own realm.
 	# vi /etc/krb5.conf

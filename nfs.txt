@@ -29,8 +29,7 @@
 			# netstat -ntap | grep rpc
 			# firewall-cmd --permanent --add-service=nfs
 			# firewall-cmd --permanent --add-service=rpc-bind
-			# firewall-cmd --permanent --add-port=20048/tcp
-			# firewall-cmd --permanent --add-port=20048/udp
+			# firewall-cmd --permanent --add-service=mountd
 			# firewall-cmd --reload
 		- rpcinfo -p <nfs server> command and showmount -e <nfs server> should now work on client
 
@@ -42,6 +41,60 @@
 		- Load config and Build export table
 			# exportfs -r -v
 
+		- /etc/fstab
+			nfsserver:/share/path 	/mountpoint 	nfs 	_netdev	0 0
+
+		- Make sure remote-fs.target target is enabled on the client. This mounts remote shares on boot
+			# systemctl status remote-fs.target
+
 
 	- NFS security
-		root_squash vs no_root_squash
+		no_root_squash 	- Allows for root access to the mount. Very unsecure, do not use.
+
+	- SELinux context list. If you forget this, use "seinfo -t | grep nfs" command to look it up
+		nfs_t 						- Allows NFS server to access the share
+		public_content_t 			- Generic context type thgat allows NFS server to read the contents of the dir. Other services like samba and ftp can use it as well
+		public_content_rw_t			- This context allows NFS server rw access to dir
+
+	- SELinux booleans - both are enabled by default
+		nfs_export_all_ro
+		nfs_export_all_rw
+
+
+### NFS Kerberos Authentication ###
+
+	To add security to an NFS share, you need to add the sec= method option while defining the share in /etc/exports. The following security methods are
+	available:
+
+		- none Anonymous access to files is allowed. All access is based on the per-missions of the user nfsnobody on the NFS server. So, you must make sure 
+		that this user has the appropriate permissions to files and directories. If the user nobody needs write access as well, you need to make sure that the nfsd_anon_write SELinux Boolean is active also. Notice that you should never do this, because you’ll be granting any user access to the share with full write permissions.
+
+		- sys This is the default security option, where user access to files is based on UID and GID values. A UID coming from the NFS client will be mapped to the same UID on the NFS server (even if the user names associated to that UID do not match).
+
+		- krb5 NFS clients (that means machines, not users) prove their identity using a Kerberos keytab file. To access files in the NFS share, the user needs to initialize a Kerberos setting as well; otherwise, no access is allowed to files. That means that the authentication session of a user needs to be Kerberized, and if this is not the case, the user must initiate a session using kinit username
+
+		- krb5i Same as krb5 with the addition that a cryptographic guarantee is added to make sure that data in the request has not been tampered with.
+
+		- krb5p Same as krb5i but also adds encryption to all requests between server and client. This does have a performance impact, but it offers the best possible protection.
+
+
+
+
+	To establish a Kerberized session between NFS client and host, a few items are required:
+
+		- /etc/krb5.keytab: This file contains the security principals for both the NFS server as the NFS client, and it is required to join the Kerberos realm. In the /etc/krb5.keytab file, the host principal, the NFS principal, or both principals are contained. To verify the contents of the keytab file, use the klist -k command.
+
+		- A Kerberized user session: After configuring remote authentication against a Kerberos server, as described in Chapter 25 , “Configuring External Authentication and Authorization,” the login procedure is already Kerberized, and no additional action is required. You can use the klist command to verify that this is the case; this command shows all current Kerberos credentials on your machine. If klist does not show any Kerberos credentials, a Kerberized session can be established manually.
+
+		- The sec= method option, both in the share definition and in the mount options. This enables the desired Kerberos method.
+
+		- The nfs-server as well as the nfs-secure-server services must be active on the NFS server. On RHEL 7.0 you had to manually load this service and enable them, since RHEL 7.1 they are automatically loaded if shares with any of the Kerberos options are offered.
+
+		- The nfs-secure service must be loaded on the client. On RHEL 7.0 you had to manually load and enable this service. Since RHEL 7.1, it is loaded automatically if a Kerberized share is accessed.
+
+
+
+
+	- Instructions - https://www.certdepot.net/rhel7-use-kerberos-control-access-nfs-network-shares/
+
+
