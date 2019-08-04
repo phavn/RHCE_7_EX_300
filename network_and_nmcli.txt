@@ -94,21 +94,25 @@
 
        Note: default runner (roundrobin, activebackup, loadbalance etc.) method gets set to roundrobin if not specified. json config file has to get passed to nmcli to change that. The syntax is a bit complex so use the below steps instead
 
-       - To change runner method:
+       - To change runner method 1:
 
-       # teamdctl team1 config dump
+       		# nmcli con mod team1 team.runner activebackup
+
+       - To change runner method 2:
+
+       		# teamdctl team1 config dump
 
        - Grab runner snippet, modify it and place it into a json config file i.e.
 
-       	# cat team1_config.json 
+	       	# cat team1_config.json 
 
-			{
-			    "runner": {
-			        "name": "activebackup"
-			    }
-			}
+				{
+				    "runner": {
+				        "name": "activebackup"
+				    }
+				}
 
-		# nmcli con mod team1 config team1_config.json
+			# nmcli con mod team1 config team1_config.json
 
 
 		- View teaming interface state

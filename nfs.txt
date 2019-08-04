@@ -61,6 +61,12 @@
 		nfs_export_all_rw
 
 
+### NFSv4 SELinux Transparancy
+
+	- By default, linux mount uses nfs_t fcontext type when mounting NFS shares no matter what fcontext is set on the server. This can be changed by using conext="context" mount option
+		# mount -o context="system_u,object_r:public_content_rw_t:s0" server1:/srv/nfsexport /mnt/nfs
+
+
 ### NFS Kerberos Authentication ###
 
 	To add security to an NFS share, you need to add the sec= method option while defining the share in /etc/exports. The following security methods are
@@ -97,4 +103,26 @@
 
 	- Instructions - https://www.certdepot.net/rhel7-use-kerberos-control-access-nfs-network-shares/
 
+		- Kerberized NFS server instructions using 3 servers - krbserver, nfsserver, nfsclient
+
+			1. Set up kerberos server on krbserver
+			2. Set up kerberos client on nfsclient
+			3. Set up NFS server on nfsserver
+			4. kadmin on nfsserver
+				# addprinc -randkey nfs/nfsserver.nixation.com
+				# ktadd nfs/nfsserver.nixation.com
+			5. kadmin on nfsclient
+				# addprinc -randkey nfs/nfsclient.nixation.com
+				# ktadd nfs/nfsclient.nixation.com
+
+			6. Add krb5p options to /etc/exports NFS share on nfsserver
+				/etc/expors example: "/nfsshare	192.168.100.0/24(rw,sec=krb5p)
+				# exports -rv
+			7. Mount share on nfsclient using krb5p option
+				# mount -t nfs -o sec=krb5p nfsserver:/nfsshare /mnt/nfsshare/
+
+			   At this point, only authorized kerberos users with valid TGT would be able to see and access the mount on nfsclient
+			   	# su - joe
+			   	# kinit
+			   	- Mount should appear now
 

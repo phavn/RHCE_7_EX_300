@@ -1,17 +1,19 @@
 ### Practice scenarios ###
 
-- Configure kerberos server and kerberos client
-- Configure iscsi target and iscsi initiator
-- Config network teaming with activebackup runner
+* - Configure kerberos server and kerberos client
+* - Configure kerberized NFS server and client
+* - Configure iscsi target and iscsi initiator
+* - Config network teaming with activebackup runner
 - Configure NAT
-- Configure caching-only name server
+* - Firewalld rich-rules
+* - Configure caching-only name server - unbound
 - Generate various system utilization reports
 - Apache
-	- Configure a virtual host
+	* - Configure a virtual host
+	* - Deploy a basic CGI application
+	* - Configure TLS security
 	- Configure access restrictions on directories
-	- Deploy a basic CGI application
 	- Configure group-managed content
-	- Configure TLS security
 - NFS
 	- Provide network shares to specific clients
 	- Provide network shares suitable for group collaboration
@@ -22,15 +24,15 @@
 - SMTP
 	- Configure a system to forward all email to a central mail server
 - SSH
-	- Configure key-based authentication
+	* - Configure key-based authentication
 	- Configure additional options described in documentation
 - NTP
 	- Synchronize time using other NTP peers
-- Database services
-	- Install and configure MariaDB
-	- Backup and restore a database
-	- Create a simple database schema
-	- Perform simple SQL queries against a database
+* - Database services
+	* - Install and configure MariaDB
+	* - Backup and restore a database
+	* - Create a simple database schema
+	* - Perform simple SQL queries against a database
 
 
 
