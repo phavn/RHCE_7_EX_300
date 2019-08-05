@@ -1,0 +1,75 @@
+##### SAMBA #####
+
+
+	- Samba Global Parameters
+
+		Samba Parameter 			Use
+		workgroup			Specifies the Windows workgroup that the Samba server is a member of. This setting is also used to specify the Samba domain. 
+		security 			Indicates how security is handled. The default is set to security =	user , which requires users to have a valid username that is managed by the Samba server and mapped 					 to a Linux user account name.
+		host allow 			A comma, space, or tab-delimited list of hosts that are allowed access to the Samba service. See man 5 hosts_access for details on the
+							 format that needs to be used.
+		load printers 		This option, which by default is set to yes, ensures that printers from the CUPS print subsystem are shared through Samba.
+		cups options 		This option is used to specify that print driver processing is handled by CUPS and at the Samba level no interpretation of print jobs has
+							 to happen.
+		log file 			Specifies the name of the file that Samba writes log messages to.
+
+
+	- Common Directory Share Options
+
+		Directive 						Use
+		path					The path on the Linux file system of the shared directory. 
+		writable 				Enables write access on a share. If set to yes, all authenticated users have write access (if also permitted by Linux permissions). If set to no, a comma-separated 						 write list of users or groups can be used to specify names of users and groups that have write permissions on the share. (See also read only.)
+		read only				Setting the read only parameter to no has the same effect as setting writable to yes.
+		write list 				Contains a comma separated list of users or groups that have write access, even if writable is set to no. To use groups, put a @ or + in front of the
+		group name.
+		valid users 			Use to limit access to the share to listed users only. By default all users have access to the share.
+		comment 				Use to specify a comment. This comment is displayed to users before connecting to the share.
+		guest ok 				Allows access to the guest account. Be careful using this, because it basically bypasses all security settings. This parameter is required on some administrative 							 shares though.
+		browseable 				Allows browse access to shares, which means that users can navigate through the share structure to see items available in the share. Make sure to
+								 disable on the [home] share.
+
+	- Create samba users
+
+		1. Add linux user
+			# useradd -s /sbin/nologin joe
+		2. Add samba user account 
+			# smbpasswd -a joe
+
+
+	# Samba server configuration
+
+		- Install packages
+			# yum install samba samba-client cifs-utils
+		- Add bunch of user accounts using useradd and smbpasswd
+			# useradd -s /sbin/nologin joe
+			# smbpasswd -a joe
+		- Add users to common group (create it first obviously)
+			# groupadd sambagroup
+			# usermod -G sambagroup joe
+		- Create samba share directory
+			# mkdir /sambashare
+			# chgrp sambagroup /sambashare
+			# chmod 770 /sambashare
+			# chmod g+s /sambashare
+		- Edit /etc/samba/smb.conf; Add
+			[sambashare]
+				comment = My Samba Share
+				path = /sambashare
+				write list = @sambagroup
+		- Test config syntax
+			# testparm
+		- Enable and start service
+			# systemctl enable smb
+			# systemctl start smb
+		- Verify that share is available
+			# smbclient -L localhost
+		- SELinux
+		- Firewall
+		- Mount
+			# mount -t cifs -o user=joe -o password=joe //smbserver/sambashare /mnt/sambashare
+
+
+
+
+
+

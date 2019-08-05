@@ -116,10 +116,17 @@
 				# ktadd nfs/nfsclient.nixation.com
 
 			6. Add krb5p options to /etc/exports NFS share on nfsserver
-				/etc/expors example: "/nfsshare	192.168.100.0/24(rw,sec=krb5p)
+					/etc/expors example: "/nfsshare	192.168.100.0/24(rw,sec=krb5p)
+				# systemctl enable nfs-secure; systemctl start nfs-secure
 				# exports -rv
 			7. Mount share on nfsclient using krb5p option
+				# systemctl enable nfs-secure; systemctl start nfs-secure
 				# mount -t nfs -o sec=krb5p nfsserver:/nfsshare /mnt/nfsshare/
+
+				 - If there are issues like unexpected permissions denied error when mounting, try restarting all rpc services
+				 	# systemctl restart rpcbind
+				 	# systemctl restart rpc-gssd 		- Note: nfs-secure is just a pointer to rpc-gssd
+				 	# systemctl restart rpc-statd
 
 			   At this point, only authorized kerberos users with valid TGT would be able to see and access the mount on nfsclient
 			   	# su - joe
