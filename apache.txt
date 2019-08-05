@@ -50,6 +50,29 @@
 
 ### Restrict user access via .htaccess basic auth
 
+	Note: the steps below can be found in httpd manual. Install httpd-manual package then access http://localhost/manual
+
+	- Create user database then add users
+		# htpasswd -c /etc/httpd/htpasswd joe 		- Note: -c option creates a new database. The options overwrites file if it already exists. Use it only if database doesn't exist.
+		# htpasswd /etc/httpd/htpasswd pablo
+	- Create group file with the following syntax
+
+		GroupName: user1 user2 user3
+
+	- Apache httpd.conf <Directory> configuration. Add below
+
+		AuthType Basic
+		AuthName "Restricted Files"
+
+		# (Following line optional)
+		AuthBasicProvider file
+		AuthUserFile /etc/httpd/htpasswd
+		AuthGroupFile /etc/httpd/htgroup 		- Optional. Individual users can be specified below instead 
+		Require group GroupName  				- Use "Require user user1 user2 user3..." instead of group if needed
+
+	- Restart apache
+		# systemctl restart httpd
+
 
 ### Deploy cgi (Common Gateway Interface) app
 

@@ -3,15 +3,15 @@
 
 	- Samba Global Parameters
 
-		Samba Parameter 			Use
-		workgroup			Specifies the Windows workgroup that the Samba server is a member of. This setting is also used to specify the Samba domain. 
-		security 			Indicates how security is handled. The default is set to security =	user , which requires users to have a valid username that is managed by the Samba server and mapped 					 to a Linux user account name.
-		host allow 			A comma, space, or tab-delimited list of hosts that are allowed access to the Samba service. See man 5 hosts_access for details on the
-							 format that needs to be used.
-		load printers 		This option, which by default is set to yes, ensures that printers from the CUPS print subsystem are shared through Samba.
-		cups options 		This option is used to specify that print driver processing is handled by CUPS and at the Samba level no interpretation of print jobs has
-							 to happen.
-		log file 			Specifies the name of the file that Samba writes log messages to.
+		Samba Parameter 				Use
+		workgroup				Specifies the Windows workgroup that the Samba server is a member of. This setting is also used to specify the Samba domain. 
+		security 				Indicates how security is handled. The default is set to security =	user , which requires users to have a valid username that is managed by the Samba server and mapped 				  to a Linux user account name.
+		host allow 				A comma, space, or tab-delimited list of hosts that are allowed access to the Samba service. See man 5 hosts_access for details on the
+							 	 format that needs to be used.
+		load printers 			This option, which by default is set to yes, ensures that printers from the CUPS print subsystem are shared through Samba.
+		cups options 			This option is used to specify that print driver processing is handled by CUPS and at the Samba level no interpretation of print jobs has
+							 	 to happen.
+		log file 				Specifies the name of the file that Samba writes log messages to.
 
 
 	- Common Directory Share Options
@@ -28,6 +28,19 @@
 		browseable 				Allows browse access to shares, which means that users can navigate through the share structure to see items available in the share. Make sure to
 								 disable on the [home] share.
 
+
+
+	- Samba-Related SELinux Settings
+		SELinux 						Setting Use
+		samba_share_t 				Gives Samba read and write access to this directory and everything below.
+		public_content_t 			Gives Samba and other services read-only access to this directory and everything below it.
+		public_content_rw_t 		Gives Samba and other services read/write access to this directory and everything below it. Needs an additional Boolean setting.
+		smbd_anon_write 			Allows write access for Samba anonymous users. Required when using the public_content_rw_t context type.
+		samba_enable_home_dirs 		Allows Linux home directories to be shared through Samba.
+		use_samba_home_dirs 		Allows remote SMB file shares to be mounted and shared as local Linux home directories.
+
+
+
 	- Create samba users
 
 		1. Add linux user
@@ -36,7 +49,7 @@
 			# smbpasswd -a joe
 
 
-	# Samba server configuration
+	### Samba server configuration ###
 
 		- Install packages
 			# yum install samba samba-client cifs-utils
@@ -64,9 +77,17 @@
 		- Verify that share is available
 			# smbclient -L localhost
 		- SELinux
+			# semanage fcontext -a -t samba_share_t "/sambashare(/.)?"
+			# restorecon -Rv /sambashare
 		- Firewall
+			# firewall-cmd --permanent --add-service=samba
+			# firewall-cmd --reload
 		- Mount
 			# mount -t cifs -o user=joe -o password=joe //smbserver/sambashare /mnt/sambashare
+
+
+
+	### Kerberized Samba configuration ###
 
 
 

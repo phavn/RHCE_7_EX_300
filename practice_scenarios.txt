@@ -12,8 +12,8 @@
 	* - Configure a virtual host
 	* - Deploy a basic CGI application
 	* - Configure TLS security
-	- Configure access restrictions on directories
-	- Configure group-managed content
+	* - Configure access restrictions on directories
+	* - Configure group-managed content
 - NFS
 	- Provide network shares to specific clients
 	- Provide network shares suitable for group collaboration
