@@ -51,14 +51,24 @@
 
 	### Samba server configuration ###
 
+		Note: 2 user accounts will be used: joe(1001), pablo(1002). Secondary group: sambagroup (1100)
+			Make sure UID's and GID's match across servers
+
 		- Install packages
 			# yum install samba samba-client cifs-utils
 		- Add bunch of user accounts using useradd and smbpasswd
-			# useradd -s /sbin/nologin joe
+			# useradd -s /sbin/nologin -u 1001 joe
+			# useradd -s /sbin/nologin -u 1002 pablo
 			# smbpasswd -a joe
+			# smbpasswd -a pablo
+
+			- List samba users
+				# pdbedit -Lv
+
 		- Add users to common group (create it first obviously)
-			# groupadd sambagroup
+			# groupadd -g 1100 sambagroup
 			# usermod -G sambagroup joe
+			# usermod -G sambagroup pablo
 		- Create samba share directory
 			# mkdir /sambashare
 			# chgrp sambagroup /sambashare
@@ -68,7 +78,11 @@
 			[sambashare]
 				comment = My Samba Share
 				path = /sambashare
+				valid users = @sambagroup
 				write list = @sambagroup
+
+			- Note: this can be looked up in /etc/samba/smb.conf.example
+
 		- Test config syntax
 			# testparm
 		- Enable and start service
@@ -82,12 +96,28 @@
 		- Firewall
 			# firewall-cmd --permanent --add-service=samba
 			# firewall-cmd --reload
-		- Mount
-			# mount -t cifs -o user=joe -o password=joe //smbserver/sambashare /mnt/sambashare
+
+	### Samba client config ###
+		- Install packages
+			# yum install cifs-utils samba-client
+		- Add group
+			# groupadd -g 1100 sambagroup
+		- Add OS user accounts
+			# useradd -G sambagroup -u 1001 joe
+			# useradd -G sambagroup -u 1002 pablo
+		- Add directory
+			# mkdir /mnt/sambashare
+			# chgrp sambagroup /mnt/sambashare
+		- Mount with joe's ownership
+			# mount -t cifs -o username=joe,password=joe,uid=1001,gid=1100,dir_mode=0770,file_mode=0660 //server2/sambashare /mnt/sambashare/
 
 
+	### fstab ###
 
-	### Kerberized Samba configuration ###
+		# TODO: fill this out
+
+	### autofs ###
+		# TODO: fill this out
 
 
 

@@ -1,0 +1,54 @@
+##### SMTP #####
+
+
+	- In mail handling, the participants can have different roles:
+
+		- MTA: The MTA is the message transfer agent. This is the part of the mail solution that delivers messages from mail server to mail server. The MTA uses the Simple Mail Transfer Protocol (SMTP) to send messages to other servers on the Internet. To find the server that should be used for this purpose, the DNS Mail eXchange (MX) record is used. The core email communication on the Internet is between MTA servers only.
+
+		- MDA: When an MTA receives a message that is destined for one of the local users, the message is passed to the message delivery agent (MDA). The ultimate purpose of the MDA is to deliver the message into a user’s mailbox; different programs can be used for this purpose. If nothing is configured, the message is delivered in the mailbox of the Linux user that exists locally on the server where the mail is coming in. On RHEL 7, the default location for this MDA is /var/spool/mail/$USER, such as /var/spool/mail/linda.
+
+		- MUA: When a user wants to send or read mail, a mail user agent (MUA) is used. This typically is the program that the user is using, such as the command-line mail client; the text user interface that is offered with Mutt, Pine, or Elm; or a graphical client such as Evolution or Thunderbird.
+
+
+	- null client is not capable of receiving any messages, but it has all the configuration that is needed to send mail messages to other hosts
+
+	- Default user spool directory "/var/spool/mail/$USER"
+
+
+	- Postfix Server Processes Overview
+	
+		Process 							Purpose
+
+		master 					The process that controls all other Postfix processes.
+		smtp 					Responsible for SMTP communication between Postfix hosts.
+		pickup 					Picks up messages after they have been placed in the message queue.
+		cleanup 				Cleans up the message queue after the message has been delivered.
+		rewrite 				If postfix maps are used to rewrite parts of the message header, the rewrite process takes care of that.
+		sendmail 				The standard program that is used to send messages and which is implemented by Postfix.
+		qmgr 					Generic process that manages the contents of the message queue.
+
+
+	- Essential Postfix Parameters
+
+		Parameter 							Use
+		inet_interfaces 		Interface(s) on which the Postfix service will offer services. By default, set to loopback only ! Set to all to have Postfix listen on all network interfaces.
+		myorigin 				Allows you to rewrite posted email to come from a specific domain instead of $myhostname. Most often used to strip off the hostname from thesenders email 	
+								address.
+		relayhost 				Specifies which central mail server to forward messages to.
+		mydestination 			Domains handled by this server. Mail addressed to a domain not listed in mydestination is rejected.
+		local_transport 		Specifies what to use for local mail delivery. On servers that do not handle mail reception, set to “error: local delivery disabled.”
+		inet_protocols 			Specifies which protocol to use to offer services. Defaults to IPv6 if this is available. Set to ipv4 to keep configuration easy.
+		mynetworks 				Space-separated list of networks that are allowed to relay.
+
+
+	- postconf 						Utility that allows to review and edit postfix configuration
+		# postconf					View postfix config settings
+		# postconf -e <setting> 	Edit <setting>
+
+
+
+	### Postfix Relay configuration ###
+
+	
+
+
