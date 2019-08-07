@@ -117,6 +117,9 @@
 		//server2/sambashare 	/mnt/sambashare 	cifs 	_netdev,user=joe,password=joe,gid=1100,file_mode=0660,dir_mode=0770 	0 0
 
 	### autofs ###
+	
+		Note: refresher: man 5 autofs.conf
+
 		# Indirect
 			# cat /etc/auto.master.d/samba.autofs 
 				/mnt/	/etc/auto.cifs	--timeout=60
