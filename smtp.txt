@@ -49,6 +49,61 @@
 
 	### Postfix Relay configuration ###
 
+	Note: this example will relay to gmail
+
+	- Documentation can be found by:
+		# man postfix
+			Use "postconf readme_directory" or "postconf html_directory" to locate this information.
+		# postconf readme_directory
+			readme_directory = /usr/share/doc/postfix-2.10.1/README_FILES
+		# cd /usr/share/doc/postfix-2.10.1/README_FILES
+		# grep loopback *
+		# less STANDARD_CONFIGURATION_README
+
+
+
+	## Configuration Instructions
+
+		- Install packages
+			# yum install postfix mailx cyrus-sasl cyrus-sasl-plain
+
+		- Edit /etc/postfix/main.cf
+
+			relayhost = [smtp.gmail.com]:587 				 		- Replace host with smtp server provided on exam
+			inet_interfaces = loopback-only
+			mynetworks = 127.0.0.0/8 [::1]/128
+			myorigin = nixation.com 								- Or set mydomain to nixation.com then myorigin = $mydomain
+			mydestination =  										- Don't deliver locally
+			local_transport = error: local delivery is disabled
+
+
+
+			# Gmail specific settings. This will not be on the test. 
+			# Google less secure app access has to be turned off - https://myaccount.google.com/u/1/lesssecureapps?pageId=none
+
+				smtp_use_tls = yes
+				smtp_sasl_auth_enable = yes
+				smtp_sasl_security_options =
+				smtp_sasl_password_maps = hash:/etc/postfix/sasl_passwd
+				smtp_tls_CAfile = /etc/ssl/certs/ca-bundle.crt
+				smtp_sasl_security_options = noanonymous
+				smtp_sasl_tls_security_options = noanonymous
+
+					- Create gmail specific credentials file
+
+						# vi /etc/postfix/sasl_passwd
+							[smtp.gmail.com]:587    username@gmail.com:password
+						# chmod 600 /etc/postfix/sasl_passwd
+						# postmap /etc/postfix/sasl_passwd
+
+
+
+
+
+
+
+
+
 	
 
 
