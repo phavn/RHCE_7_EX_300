@@ -114,13 +114,18 @@
 
 	### fstab ###
 
-		# TODO: fill this out
+		//server2/sambashare 	/mnt/sambashare 	cifs 	_netdev,user=joe,password=joe,gid=1100,file_mode=0660,dir_mode=0770 	0 0
 
 	### autofs ###
-		# TODO: fill this out
-
-
-
-
+		# Indirect
+			# cat /etc/auto.master.d/samba.autofs 
+				/mnt/	/etc/auto.cifs	--timeout=60
+			# cat /etc/auto.cifs 
+				*	-fstype=cifs,rw,username=joe,password=joe,gid=sambagroup,file_mode=0660,dir_mode=0770	://server2/sambashare
+		# Direct
+			# cat /etc/auto.master.d/samba.autofs 
+				/-	/etc/auto.cifs	--timeout=60
+			# cat /etc/auto.cifs 
+				/mnt/sambashare	-fstype=cifs,rw,username=joe,password=joe,gid=sambagroup,file_mode=0660,dir_mode=0770	://server2/sambashare
 
 

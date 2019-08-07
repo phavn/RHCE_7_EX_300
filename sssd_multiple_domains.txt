@@ -1,0 +1,65 @@
+### Multiple domains with sssd ###
+
+# This is not an RHCE topic, had to add it somewhere for now
+
+
+1)modify /etc/krb5.conf to add otherdom. Some like this:
+
+[domain_realm]
+.maindom.COM = MAINDOM.COM
+maindom.COM = MAINDOM.COM
+.otherdom.com = OTHERDOM.COM
+otherdom.com = OTHERDOM.COM
+
+2)join OTHERDOM.COM using adcli join. assuming ad_user is an active directory user with rights to join the domain.
+
+Note: Do not remove the --host-keytab flag. Also, do not set the keytab name to /etc/krb5.keytab. Doing so will overwrite the MAINDOM.COM information and break authentication for users of that domain.
+
+adcli join --host-keytab=/etc/krb5.keytab.otherdom.com
+
+3)modify /etc/sssd.conf and add in the second domain:
+
+[sssd]
+domains = maindom.com,otherdom.com
+config_file_version = 2
+services = nss, pam, pac, ssh
+
+[domain/maindom.com]
+ad_domain = maindom.com
+krb5_realm = MAINDOM.COM
+realmd_tags = manages-system joined-with-samba 
+cache_credentials = True
+
+id_provider = ad
+krb5_store_password_if_offline = True
+default_shell = /bin/bash
+ldap_id_mapping = True
+fallback_homedir = /home/%u@%d
+access_provider = ad
+dyndns_update = false
+timeout = 3600
+
+[domain/otherdom.com]
+ad_domain = otherdom.com
+krb5_realm = OTHERDOM.COM
+realmd_tags = manages-system joined-with-samba 
+cache_credentials = True
+id_provider = ad
+krb5_store_password_if_offline = True
+default_shell = /bin/bash
+ldap_id_mapping = True
+use_fully_qualified_names = False
+fallback_homedir = /home/%u@%d
+access_provider = ad
+timeout = 3600
+krb5_keytab = /etc/krb5.keytab.otherdom.com
+ldap_krb5_keytab = /etc/krb5.keytab.otherdom.com
+
+4)modify /etc/hosts and add in your AD servers. assuming
+
+127.0.0.1               localhost
+192.168.1.2           adserver1.maindom.com     adserver1
+192.168.1.3           adserver2.maindom.com     adserver2
+192.168.2.2           adserver1.otherdom.com     adserver1
+192.168.3.3           adserver2.otherdom.com     adserver2
+
