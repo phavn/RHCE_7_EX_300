@@ -1,0 +1,68 @@
+##### Time management #####
+
+	- Hardware/rtc(real-time) clock
+		When a Linux server boots, the hardware clock, also referred to as real-time clock,
+		is read. This clock typically resides in the computer hardware. Generally, it is an
+		integrated circuit on the system board that is completely independent of the current
+		state of the operating system and keeps running even when the computer is shut
+		down. From the hardware clock, the system gets its initial time setting.
+
+   	- System clock
+		System time is a time maintained by the operating system. Once the system has
+		booted, the system clock is completely independent of the hardware clock. There-
+		fore, when system time is changed, the new system time is not automatically syn-
+		chronized with the hardware clock.
+		System time is a time that is maintained by the operating system and it is kept in
+		UTC. Applications running on the server are converting system time into local
+		time. Local time is the actual time in the current time zone. In local time, daylight
+		savings time (DST) is considered so that it always shows an accurate time for that
+		system.
+
+
+		- Show time information (system time, rtc, timezone etc.)
+			# timedatectl
+		- Show time zone (also located in /usr/share/zoneinfo/)
+			# timedatectl list-timezones
+		- Set time zone (sets softlink from /etc/locatime to /usr/share/zoneinfo/ zone file)
+			# timedatectl set-timezone <time zone>
+		- Set time
+			# timedatectl set-time <time>
+
+   	### NTP /Chrony client
+	   	
+	   	# timedatectl set-ntp 1
+
+	   	# chronyc tracking	- Skew time shows how much to speed up/delay system time as it's running slower/faster than the ntp source
+	   	# chronyc sources -v
+	   		- stratum - how far server is from its clock device source
+
+	   	- Chronyd config file - https://access.redhat.com/documentation/en-us/red_hat_enterprise_linux/7/html/system_administrators_guide/sect-understanding_chrony_and-its_configuration
+	   		
+	   		/etc/chrony.conf
+	   			- rtcsync directive set to on by default. Tells chrony to sync RTC clock to system clock every 11 minutes
+
+
+	 ### Chrony server ###
+
+
+	 To synchronize time in large network environments, you need a reliable clock. On networks that are connected to the Internet, reliable time is fetched from Internet servers that are connected to an external clock. This external clock is also referred to as the reference clock. Different models of hardware clocks are available, of which atomic clocks are the most reliable time sources.
+
+	 In a network where many services are providing time, it is important to differentiate between reliable servers and less-reliable servers. To express the reliability of an NTP server, the concept of stratum is used. A low stratum is more reliable than a high stratum because a server with a low stratum number is closer to the reliable hardware clock than a server with a higher stratum number.
+
+	 The stratum can be assigned by the administrator of the server when he configures the external clock, and a stratum can also be inherited from servers on the Internet (which is the more common scenario). At the top of the hierarchy are stratum 1 servers. These are directly connected to a hardware clock. A server that synchronizes directly with a stratum 1 server will itself be able to announce a stratum of 2 to others. By using the different stratums, NTP can select the most reliable server.
+
+	 Stratum 10 is commonly assigned to the internal clock. An NTP server as a backup can synchronize with its own internal clock, and to make clear to every server involved that that is not the most desirable solution, a stratum of 10 is assigned to the internal clock.
+
+
+
+	 For complete redundancy, a third tier can be installed as well where servers are configured as peers to one another. In a peer configuration, no hierarchy exists between the servers, but the servers are communicating at the same level. If connection to the external server fails, the result is that NTP can still maintain a common time that all peers agree upon.
+
+	 To make the configuration completely foolproof, you can enable the line local stratum 10 . This enables the server to fall back on the internal local hardware clock if external servers can be reached no longer. If that happens, every server will be on its own, but at least it will still have NTP time synchronization (even if it is unreli- able time synchronization). This is not extremely useful, but is a bit. Some services check whether NTP time synchronization is established without checking how it is established. These services will work even if your server has stratum 10 NTP synchronization with itself only.
+
+
+   Command 							Use
+	chronyc 					sources Shows current servers that chrony is synchronizing with
+	chronyc tracking 			Gives detailed information about the current local time configuration 
+	chronyc sourcestats 		Provides detailed information about the state of the remote servers
+
+

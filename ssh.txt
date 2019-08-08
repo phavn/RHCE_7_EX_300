@@ -1,6 +1,36 @@
 ##### SSH #####
 
 
-- Keys
+	- Most Useful sshd Configuration Options
 
-- Tunnel
+	   Option 										 Use
+		Port 								Defines the TCP listening port.
+		PermitRootLogin 					Allow/disallow root login.
+		MaxAuthTries 						Used to specify the maximum number of authentication tries. After reaching half of this number, failures are logged to syslog.
+		MaxSessions 						The maximum number of sessions that can be open from one IP address.
+		AllowUsers 							Used to specify a space-separated list of users that are allowed to connect to the server.
+		PasswordAuthentication 				Specifies whether to allow password authentication. This option is on by default.
+		GSSAPIAuthentication 				Indicates whether authentication through the GSSAPI needs to be enabled. Used for Kerberos based authentication.
+		TCPKeepAlive 						Set to yes if you do not want to clean up inactive TCP connections.
+		ClientAliveInterval 				The interval in seconds that packets are sent to the client to figure out if the client is still alive.
+		ClientAliveCountMax 				The number of client alive packets that needs to be sent.
+		UseDNS 								If on, uses DNS name lookup to match incoming IP addresses to names.
+		ServerAliveInterval 				The interval in seconds that a client sends a packet to a server to keep connections alive.
+		ServerAliveCountMax 				The maximum number of packets a client sends to a server to keep connections alive.
+
+
+	# Change port
+		- Edit /etc/ssh/sshd_config
+			- Add or modify "Port <number>" directive
+		# semanage port -a -t ssh_port_t -p tcp <port number>
+		# systemctl restart sshd
+
+
+	# Tunnels
+
+		- Port Forwarding Examples
+
+		Command 																		Use
+		ssh -fNL 4444:server.rhatcertification.com:80root@server2.example.com 		Connect as root to server2.example.com to forward port 80 on server.rhatcertification.com to local port 4444.
+		ssh -fNL 5555:localhost:80 root@server2.example.com 						Connect as root to server2.example.com to forward port 80 on that host to port 5555 on localhost.
+		ssh -fNR 80:localhost:8088 user@lab.sandervanvugt.nl 						Connect as user to lab.sandervanvugt.nl to forward port 8088 to port 80 on localhost.
