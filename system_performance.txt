@@ -1,5 +1,7 @@
 ##### System performance #####
 
+	https://www.certdepot.net/rhel7-produce-deliver-reports-system-utilization-processor-memory-disk-network/
+
 	- System performance related files are in /proc
 
 	- Dstat is a versatile replacement for vmstat, iostat and ifstat. Dstat overcomes some of the limitations and adds some extra features.
