@@ -25,7 +25,7 @@
 	* - Configure a system to forward all email to a central mail server
 - SSH
 	* - Configure key-based authentication
-	- Configure SSH tunnel
+	* - Configure SSH tunnel
 	* - Configure additional options described in documentation
 - NTP
 	- Synchronize time using other NTP peers
