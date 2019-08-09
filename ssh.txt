@@ -31,6 +31,5 @@
 		- Port Forwarding Examples
 
 		Command 																		Use
-		ssh -fNL 4444:server.rhatcertification.com:80root@server2.example.com 		Connect as root to server2.example.com to forward port 80 on server.rhatcertification.com to local port 4444.
-		ssh -fNL 5555:localhost:80 root@server2.example.com 						Connect as root to server2.example.com to forward port 80 on that host to port 5555 on localhost.
-		ssh -fNR 80:localhost:8088 user@lab.sandervanvugt.nl 						Connect as user to lab.sandervanvugt.nl to forward port 8088 to port 80 on localhost.
+		ssh -fNL 5555:localhost:80 root@server					Connect as root to server to forward server's port 80 to port 5555 on localhost. Executed on the localhost (sshclient) machine.
+		ssh -fNR 80:localhost:8088 user@sshclient				Connect as root to sshclient to forward port 80 on localhost to port 8088 on sshclient. Executed on server (localhost)
