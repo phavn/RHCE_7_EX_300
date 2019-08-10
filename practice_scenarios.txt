@@ -8,36 +8,36 @@
 * - Firewalld rich-rules
 * - Configure caching-only name server - unbound
 - Generate various system utilization reports
+
 - Apache
 	* - Configure a virtual host
 	* - Deploy a basic CGI application
 	* - Configure TLS security
 	* - Configure access restrictions on directories
 	* - Configure group-managed content
+
 - NFS
 	* - Provide network shares to specific clients
 	* -  Provide network shares suitable for group collaboration
 	* - Use Kerberos to control access to NFS network shares
+
 - Samba
 	* - Provide network shares to specific clients
 	* - Provide network shares suitable for group collaboration
+
 - SMTP
 	* - Configure a system to forward all email to a central mail server
+
 - SSH
 	* - Configure key-based authentication
 	* - Configure SSH tunnel
 	* - Configure additional options described in documentation
 - NTP
 	- Synchronize time using other NTP peers
-* - Database services
+
+- Database services
 	* - Install and configure MariaDB
 	* - Backup and restore a database
 	* - Create a simple database schema
 	* - Perform simple SQL queries against a database
-
-
-
-
-
-
 
