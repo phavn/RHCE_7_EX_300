@@ -62,7 +62,10 @@
 
 
 
-	## Configuration Instructions
+	### Configuration Instructions
+
+		# https://www.certdepot.net/rhel7-configure-system-forward-email-central-mail-server/
+
 
 		- Install packages
 			# yum install postfix mailx cyrus-sasl cyrus-sasl-plain
