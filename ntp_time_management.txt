@@ -1,5 +1,7 @@
 ##### Time management #####
 
+	https://www.rootusers.com/how-to-synchronize-time-in-linux-with-ntp-peers/
+
 	- Hardware/rtc(real-time) clock
 		When a Linux server boots, the hardware clock, also referred to as real-time clock,
 		is read. This clock typically resides in the computer hardware. Generally, it is an
@@ -64,5 +66,36 @@
 	chronyc 					sources Shows current servers that chrony is synchronizing with
 	chronyc tracking 			Gives detailed information about the current local time configuration 
 	chronyc sourcestats 		Provides detailed information about the state of the remote servers
+
+	chronyc makestep			force synchronization using sources from chrony.conf now
+
+
+	### Chorny peer configuration ###
+
+		https://www.lisenet.com/2016/time-synchronisation-with-chrony-on-rhel-7/
+
+
+		- Edit /etc/chrony.conf
+
+			server 0.centos.pool.ntp.org iburst 			- External NTP server to sync with
+			peer nfsserver.nixation.com	 					- Local peer
+			local stratum 10 								- Fall back on internal clock if connection to external NTP fails
+
+		- Restart chronyd
+			# systemctl restart chronyd
+
+			Note: on exam if above doesn't work, try adding "allow <ip address range>" and add "ntp" service to firewalld
+
+
+		The server should use peer synchronisation with the server nfsserver as a backup.
+
+		The last line enables the server to fall back on the internal local hardware clock if external servers cannot be reached. Using local to say that the local clock is stratum 10 makes chrony use the local clock when no timeservers are available. This is good because it makes sure we can disconnect your server from the Internet without getting our clock screwed.
+
+
+
+
+
+
+
 
 

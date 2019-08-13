@@ -7,7 +7,7 @@
 - Configure NAT
 * - Firewalld rich-rules
 * - Configure caching-only name server - unbound
-- Generate various system utilization reports
+* - Generate various system utilization reports
 
 - Apache
 	* - Configure a virtual host
