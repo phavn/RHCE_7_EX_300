@@ -33,7 +33,7 @@
 	* - Configure SSH tunnel
 	* - Configure additional options described in documentation
 - NTP
-	- Synchronize time using other NTP peers
+	* - Synchronize time using other NTP peers
 
 - Database services
 	* - Install and configure MariaDB
