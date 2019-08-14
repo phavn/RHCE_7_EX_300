@@ -40,9 +40,9 @@
 
    - Masquerade - https://www.rootusers.com/how-to-use-firewalld-rich-rules-and-zones-for-filtering-and-nat/
 
-      # firewall-cmd --permanent --zone=testing --add-masquerade        - Enable masquerading for the zone
+      # firewall-cmd --permanent --zone=testing --add-masquerade            - Enable masquerading for the zone
       # firewall-cmd --reload
-      # firewall-cmd --permanent --query-masquerade                     - Query if it was enabled
+      # firewall-cmd --permanent --query-masquerade                         - Query if it was enabled
       # firewall-cmd --permanent --zone=public --add-rich-rule="rule family=ipv4 source address=192.168.100.0/24 masquerade"
 
 
