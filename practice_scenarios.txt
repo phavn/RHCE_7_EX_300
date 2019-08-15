@@ -4,7 +4,7 @@
 * - Configure kerberized NFS server and client
 * - Configure iscsi target and iscsi initiator
 * - Config network teaming with activebackup runner
-- Configure NAT
+* - Configure NAT
 * - Firewalld rich-rules
 * - Configure caching-only name server - unbound
 * - Generate various system utilization reports
