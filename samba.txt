@@ -92,8 +92,10 @@
 			# smbclient -L localhost
 			# smbstatus
 		- SELinux
-			# semanage fcontext -a -t samba_share_t "/sambashare(/.)?"
+			# semanage fcontext -a -t samba_share_t "/sambashare(/.)?" 				- public_content_rw_t could be used as well
 			# restorecon -Rv /sambashare
+			# setsebool -P samba_share_nfs=1 										- if directory is shared with nfs
+			# setsebool -P samba_export_all_rw=1 									- set on exam regardless
 		- Firewall
 			# firewall-cmd --permanent --add-service=samba
 			# firewall-cmd --reload
@@ -132,4 +134,14 @@
 			# cat /etc/auto.cifs 
 				/mnt/sambashare	-fstype=cifs,rw,username=joe,password=joe,gid=sambagroup,file_mode=0660,dir_mode=0770	://server2/sambashare
 
+
+	### Multiuser support ###
+
+	- Mount samba share with the following options
+
+		# mount -t cifs -o cred=/root/.cifs.user -o sec=ntlmssp,multiuser //nfsserver/smbshare /samba/
+
+	- Log in as user that was granted access to samba share
+		# su - pavel
+		# cifscreds add nfsserver  								- Enter password when prompted. User should now have access to /samba mount. /samba mount would be mounted owned by user:group
 
