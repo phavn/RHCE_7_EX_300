@@ -90,6 +90,7 @@
 			# systemctl start smb
 		- Verify that share is available
 			# smbclient -L localhost
+			# smbstatus
 		- SELinux
 			# semanage fcontext -a -t samba_share_t "/sambashare(/.)?"
 			# restorecon -Rv /sambashare
