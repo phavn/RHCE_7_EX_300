@@ -95,7 +95,7 @@
 			# semanage fcontext -a -t samba_share_t "/sambashare(/.)?" 				- public_content_rw_t could be used as well
 			# restorecon -Rv /sambashare
 			# setsebool -P samba_share_nfs=1 										- if directory is shared with nfs
-			# setsebool -P samba_export_all_rw=1 									- set on exam regardless
+			# setsebool -P samba_export_all_rw=1 									- set if directory context is not samba_share_t
 		- Firewall
 			# firewall-cmd --permanent --add-service=samba
 			# firewall-cmd --reload
@@ -139,9 +139,9 @@
 
 	- Mount samba share with the following options
 
-		# mount -t cifs -o cred=/root/.cifs.user -o sec=ntlmssp,multiuser //nfsserver/smbshare /samba/
+		# mount -t cifs -o cred=/root/.cifs.user -o sec=ntlmssp,multiuser //nfsserver/smbshare /samba/		- sec=ntlmssp or other security method like krb is required with multiuser option
 
 	- Log in as user that was granted access to samba share
 		# su - pavel
-		# cifscreds add nfsserver  								- Enter password when prompted. User should now have access to /samba mount. /samba mount would be mounted owned by user:group
+		# cifscreds add -u joe nfsserver  						- Enter password when prompted. User should now have access to /samba mount. /samba mount would be mounted owned by user:group
 
