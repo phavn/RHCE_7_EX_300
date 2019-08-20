@@ -43,3 +43,22 @@
 	  - LVM db backup 
 
 
+
+- Test stuff
+
+	- Host and user based security for all services, bind to specific interface or ip address
+		- iscsi
+		- httpd
+		- mysql
+		- postfix
+		- nfs
+	- Memorize json syntax for activebackup network teaming runner
+	- Set up ssl for main apache documentroot
+	- Practise creating directories in main apache folder - then changing ownership to a regular user to it can be accesses as rw locally (I think)
+	- Set up NFS with kerberos using premade keytab files
+	- Practise setting up mysql user (Had issue logging in)
+	- Practise SQL joins and where clause
+	- Why did I get 0 on smtp?
+	- Why didn't ipv6 configuration work? it was d000:a18::d5 and d000:a18::d0
+	- Why was RedHat 7.0 used?
+
