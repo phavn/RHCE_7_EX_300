@@ -52,13 +52,18 @@
 		- mysql
 		- postfix
 		- nfs
+	- Set up samba 
+		- Why didn't it get ownership and permissions from server when mounted on client?
 	- Memorize json syntax for activebackup network teaming runner
 	- Set up ssl for main apache documentroot
 	- Practise creating directories in main apache folder - then changing ownership to a regular user to it can be accesses as rw locally (I think)
 	- Set up NFS with kerberos using premade keytab files
+		- /public as ro
+		- /protected as rw,krb5p and shared
 	- Practise setting up mysql user (Had issue logging in)
 	- Practise SQL joins and where clause
 	- Why did I get 0 on smtp?
 	- Why didn't ipv6 configuration work? it was d000:a18::d5 and d000:a18::d0
 	- Why was RedHat 7.0 used?
+	- Bash script that accept an argument in a form of path to file. Exits if not provided.
 
