@@ -133,3 +133,8 @@
 			   	# kinit
 			   	- Mount should appear now
 
+
+	- RHEL 7.0 instructions
+
+	
+
