@@ -85,6 +85,9 @@
 
        # nmcli con add type team con-name team1 ifname team1
        # nmcli con mod team1 ipv4.addresses 192.168.100.100/24 ipv4.gateway 192.168.100.1 ipv4.dns 192.168.100.1
+
+       	Note: RHEL 7.0 syntax is different!!!: nmcli con mod team1 ipv4.addresses "192.168.100.11/24 192.168.100.1"
+
        # nmcli con add type ethernet con-name team1-slave1 ifname eth0 master team1
        # nmcli con add type ethernet con-name team1-slave2 ifname eth1 master team1
        # nmcli con mod team1-slave1 connection.autoconnect yes
@@ -113,6 +116,8 @@
 				}
 
 			# nmcli con mod team1 config team1_config.json
+
+			NOTE: RHEL7.0!!! "# nmcli con mod team1 team.config '{"runner":{"name":"activebackup"}}'"
 
 
 		- View teaming interface state

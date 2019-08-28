@@ -134,7 +134,28 @@
 			   	- Mount should appear now
 
 
-	- RHEL 7.0 instructions
+	- RHEL 7.0 instructions 
 
 	
+		- Kerberized NFS server instructions using 2 servers - nfsserver, nfsclient. Assume there is a kerberos server somewhere. keytab files are provided on exam
 
+			2. Set up kerberos client on nfsclient (install krb5-workstation and pam_krb5; copy keytab file; edit /etc/krb5.conf)
+			3. Set up NFS server on nfsserver (install krb5-workstation and pam_krb5; copy keytab file; edit /etc/krb5.conf)
+			6. Add krb5p options to /etc/exports NFS share on nfsserver
+					/etc/expors example: "/nfsshare	192.168.100.0/24(rw,sec=krb5p)
+				# systemctl enable nfs-secure-server
+				# systemctl start nfs-secure-server 
+				# systemctl restart nfs-server 
+				# systemctl restart rpcbind
+				# exports -rv
+			7. Mount share on nfsclient using krb5p option
+				# systemctl enable nfs-secure; systemctl start nfs-secure
+				# mount -t nfs -o sec=krb5p nfsserver:/nfsshare /mnt/nfsshare/
+
+				 - If there are issues like unexpected permissions denied error when mounting, try restarting all rpc services
+				 	# systemctl restart rpcbind
+
+			   At this point, only authorized kerberos users with valid TGT would be able to see and access the mount on nfsclient
+			   	# su - joe
+			   	# kinit
+			   	- Mount should appear now
